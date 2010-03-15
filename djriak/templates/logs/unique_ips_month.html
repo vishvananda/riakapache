@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Unique Ips for {{ date }}{% endblock %}
+
+{% block extrahead %}
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+    
+      // Load the Visualization API and the piechart package.
+      google.load('visualization', '1', {'packages':['columnchart']});
+      
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.setOnLoadCallback(drawChart);
+      
+      // Callback that creates and populates a data table, 
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+      function drawChart() {
+
+      // Create our data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Day');
+        data.addColumn('number', 'Unique Ips');
+        data.addRows([
+{% for day in days %}
+          ['{{ day.day }}', {{ day.uniques }}],
+{% endfor %}
+        ]);
+
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+        chart.draw(data, {width: 400, height: 240, is3D: true, 
+                          title: 'Page Views for {{ date }}'});
+      }
+    </script>
+{% endblock %}
+
+{% block content %}
+<h1>Uniqe Ips for {{ date }}</h1>
+<div id="chart"></div>
+<table>
+  <thead><td>Day</td><td>Unique Ips</td></thead>
+{% for day in days %}
+  <tr><td>{{ day.day }}</td><td>{{ day.uniques }}</td></thead>
+{% empty %}
+  <tr><td colspan="2">No page views found for {{ date }}</td></tr>
+{% endfor %}
+</table>
+{% endblock %}
+

@@ -2,7 +2,7 @@
 
 RIAK_HOST = 'localhost'
 RIAK_PORT = 8098
-RIAK_BUCKET = 'test'
+RIAK_BUCKET = 'test4'
 
 import os.path
 

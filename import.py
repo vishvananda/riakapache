@@ -13,7 +13,7 @@ import pytz
 
 HOST = 'localhost'
 PORT = 8098
-BUCKET = 'test2'
+BUCKET = 'test4'
 FILE = '/home/vishvananda/nasa/tbllog/access.log'
 FORMAT = apachelog.formats['extended']
 IGNORE = (
@@ -94,7 +94,8 @@ for line in open(FILE):
             # hit['longdate'] = httpdate(dt)
             # print json.dumps(hit)
             if id % 1000 == 0: print id, hit['date']
-            if hit['date'] == '2010-02-11': break;
+            if hit['date'] == '2010-02-08': break;
+#            if id == 5001: break;
             obj = bucket.new(str(id), hit).store()
     except apachelog.ApacheLogParserError:
         sys.stderr.write("Unable to parse %s" % line)

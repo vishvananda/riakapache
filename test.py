@@ -1,14 +1,15 @@
 import riak
 
 HOST = 'localhost'
-
 PORT = 8098
+BUCKET = 'test4'
 
 client = riak.RiakClient(HOST, PORT)
-for i in range(1, 10000):
-    client = client.add("test2", str(i))
+for i in range(1, 19707):
+    client = client.add(BUCKET, str(i))
 print client \
     .map("function (value) {"
+      +  "    if(!value.values) return [];"
       +  "    var hit = JSON.parse(value.values[0].data);"
       +  "    if (hit.date == '2010-02-07') {"
       +  "        return [1];"
@@ -19,14 +20,14 @@ print client \
     .reduce("Riak.reduceSum", {'timeout': 200000}).run()
 
 client = riak.RiakClient(HOST, PORT)
-print client.add("test2") \
+print client.add(BUCKET) \
     .map("function (value) {"
-      +  "    return [1]"
+      +  "    return [1];"
       +  "}", {'timeout': 200000}) \
     .reduce("Riak.reduceSum", {'timeout': 200000}).run()
 
 client = riak.RiakClient(HOST, PORT)
-print client.add("test2") \
+print client.add(BUCKET) \
     .map("function (value) {"
       +  "    var hit = JSON.parse(value.values[0].data);"
       +  "    if (hit.date == '2010-02-07') {"
