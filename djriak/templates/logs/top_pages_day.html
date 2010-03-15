@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Top pages for {{ date }}{% endblock %}
+{% block content %}
+<h1>Top pages for {{ date }}</h1>
+<table>
+  <thead><td>Url</td><td>Hits</td></thead>
+{% for page in pages %}
+  <tr><td>{{ page.url }}</td><td>{{ page.hits }}</td></thead>
+{% empty %}
+  <tr><td colspan="2">No page views found for {{ date }}</td></tr>
+{% endfor %}
+</table>
+{% endblock %}
+

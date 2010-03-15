@@ -13,10 +13,17 @@ import pytz
 
 HOST = 'localhost'
 PORT = 8098
+BUCKET = 'test2'
+FILE = '/home/vishvananda/nasa/tbllog/access.log'
+FORMAT = apachelog.formats['extended']
 IGNORE = (
-    u"^/images",
-    u"^/favicon.ico$",
-    u"^/style.css$",
+    ur"\.gif$",
+    ur"\.jpg$",
+    ur"\.js$",
+    ur"\.css$",
+    ur"\.ico$",
+    ur"^/flickr/",
+    ur"^/feed/",
 )
 
 ignore_compiled = []
@@ -53,25 +60,25 @@ def httpdate(dt):
 
 def ignored(url):
     for exp in ignore_compiled:
-        result = exp.match(url)
+        result = exp.search(url)
         if result != None:
             return True
     return False
 
 client = riak.RiakClient(HOST, PORT)
-bucket = client.bucket('test3')
+bucket = client.bucket(BUCKET)
 
-p = apachelog.parser(r'%v ' + apachelog.formats['extended'])
+p = apachelog.parser(FORMAT)
 
 
 id = 0
-for line in open('access_log'):
-    id += 1
+for line in open(FILE):
     try:
         data = p.parse(line)
         request_parts = data["%r"].split(" ")
         url_parts = request_parts[1].partition("?")
-        if data["%v"] == 'iqtest.com' and not ignored(url_parts[0]):
+        if not ignored(url_parts[0]):
+            id += 1
             hit = {}
             hit['host'] = data["%h"]
             hit['url'] = url_parts[0];
@@ -86,6 +93,8 @@ for line in open('access_log'):
             hit['timestamp'] = dt.strftime('%s')
             # hit['longdate'] = httpdate(dt)
             # print json.dumps(hit)
+            if id % 1000 == 0: print id, hit['date']
+            if hit['date'] == '2010-02-11': break;
             obj = bucket.new(str(id), hit).store()
     except apachelog.ApacheLogParserError:
         sys.stderr.write("Unable to parse %s" % line)
